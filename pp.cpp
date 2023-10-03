@@ -1,14 +1,13 @@
-//                          _      _       __   _        _       
-//  _ __ ___    ___  _ __  | |__  (_)     / /  (_)  ___ (_) ___  
-// | '_ ` _ \  / _ \| '_ \ | '_ \ | |    / /   | | / __|| |/ __| 
-// | | | | | ||  __/| |_) || | | || |   / /    | || (__ | |\__ \ 
-// |_| |_| |_| \___|| .__/ |_| |_||_|  /_/     |_| \___||_||___/ 
-//                  |_|                                          
+//                          _      _       __   _        _
+//  _ __ ___    ___  _ __  | |__  (_)     / /  (_)  ___ (_) ___
+// | '_ ` _ \  / _ \| '_ \ | '_ \ | |    / /   | | / __|| |/ __|
+// | | | | | ||  __/| |_) || | | || |   / /    | || (__ | |\__ \
+// |_| |_| |_| \___|| .__/ |_| |_||_|  /_/     |_| \___||_||___/
+//                  |_|
 //
 //              Created by Vlad Litvinov Б23-534
 //
-
-#include <dir.h>
+#include <filesystem>
 #include <string>
 #include <fstream>
 #include <vector>
@@ -29,7 +28,7 @@ string preProcess(string dir, string path){
     vector <string> data;
     string includeData = "", includePath;
     string buffer = "";
-    ifstream fr(dir+"\\"+path);
+    ifstream fr(dir+"/"+path);
     while(!fr.eof()){
         getline(fr,buffer);
         data.push_back(buffer);
@@ -43,6 +42,14 @@ string preProcess(string dir, string path){
                 includeData+="\n";
             }
             includeData+="//#include \""+includePath+"\"\n";
+            if(includePath.find("/")!=-1){
+                string untilSlash=includePath.substr(0,includePath.rfind("/"));
+                dir+="/"+untilSlash;
+                includePath.erase(0,includePath.rfind("/")+1);
+            }
+            printf("---------\n");
+            printf("%s\n",dir.c_str());
+            printf("%s\n\n",includePath.c_str());
             includeData+=preProcess(dir,includePath);
             includeData+="\n//#endclude \""+includePath+"\"";
             continue;
@@ -60,6 +67,14 @@ string preProcess(string dir, string path){
                 includeData+="\n";
             }
             includeData+="//#include \""+includePath+"\"\n";
+            if(includePath.find("/")!=-1){
+                string untilSlash=includePath.substr(0,includePath.rfind("/"));
+                dir+="/"+untilSlash;
+                includePath.erase(0,includePath.rfind("/")+1);
+            }
+            printf("---------\n");
+            printf("%s\n",dir.c_str());
+            printf("%s\n\n",includePath.c_str());
             includeData+=preProcess(dir,includePath);
             includeData+="\n//#endclude \""+includePath+"\"";
             continue;
@@ -75,15 +90,15 @@ string preProcess(string dir, string path){
 
 int main(int argc, char **argv){
     if(argc>1){
-        char dir_path[256];
-        getcwd(dir_path, 255);
-        string data=preProcess(charToString(dir_path),charToString(argv[1]));
-        ofstream fw(charToString(dir_path)+"\\"+charToString(argv[1]));
+        auto dir_path = std::filesystem::current_path();
+        printf("\n%s\n\n",(dir_path.u8string()+"/"+charToString(argv[1])).c_str());
+        string data=preProcess(dir_path.u8string(),charToString(argv[1]));
+        ofstream fw(dir_path.u8string()+"/"+charToString(argv[1]));
         fw<<data;
         fw.close();
         system(("g++ "+charToString(argv[1])).c_str());
     }else{
-        printf("Input file didn't set");
+        printf("Input file didn't set\n");
     }
     return 0;
 }

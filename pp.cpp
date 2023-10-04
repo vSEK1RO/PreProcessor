@@ -28,6 +28,7 @@ string preProcess(string dir, string path){
     vector <string> data;
     string includeData = "", includePath;
     string buffer = "";
+    string untilSlash;
     ifstream fr(dir+"/"+path);
     while(!fr.eof()){
         getline(fr,buffer);
@@ -43,14 +44,16 @@ string preProcess(string dir, string path){
             }
             includeData+="//#include \""+includePath+"\"\n";
             if(includePath.find("/")!=-1){
-                string untilSlash=includePath.substr(0,includePath.rfind("/"));
-                dir+="/"+untilSlash;
-                includePath.erase(0,includePath.rfind("/")+1);
+                untilSlash=includePath.substr(0,includePath.rfind("/"));
+                buffer=includePath;
+                buffer.erase(0,includePath.rfind("/")+1);
+                includeData+=preProcess(dir+"/"+untilSlash,buffer);
+            }else{
+                includeData+=preProcess(dir,includePath);
             }
             printf("---------\n");
             printf("%s\n",dir.c_str());
             printf("%s\n\n",includePath.c_str());
-            includeData+=preProcess(dir,includePath);
             includeData+="\n//#endclude \""+includePath+"\"";
             continue;
         }
@@ -68,14 +71,16 @@ string preProcess(string dir, string path){
             }
             includeData+="//#include \""+includePath+"\"\n";
             if(includePath.find("/")!=-1){
-                string untilSlash=includePath.substr(0,includePath.rfind("/"));
-                dir+="/"+untilSlash;
-                includePath.erase(0,includePath.rfind("/")+1);
+                untilSlash=includePath.substr(0,includePath.rfind("/"));
+                buffer=includePath;
+                buffer.erase(0,includePath.rfind("/")+1);
+                includeData+=preProcess(dir+"/"+untilSlash,buffer);
+            }else{
+                includeData+=preProcess(dir,includePath);
             }
             printf("---------\n");
             printf("%s\n",dir.c_str());
             printf("%s\n\n",includePath.c_str());
-            includeData+=preProcess(dir,includePath);
             includeData+="\n//#endclude \""+includePath+"\"";
             continue;
         }

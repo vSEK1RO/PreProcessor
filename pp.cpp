@@ -59,10 +59,10 @@ string preProcess(string dir, string path){
         }
         if(data[i].substr(0,12)=="//#include \""){
             includePath=data[i].substr(12,data[i].substr(12,data[i].size()-12).find("\""));
-            while(data[top].substr(0,12)!="//#include \""){
+            while(data[top].substr(0,12+includePath.size())!=("//#include \""+includePath)){
                 top++;
             }
-            while(data[bottom].substr(0,13)!="//#endclude \""){
+            while(data[bottom].substr(0,13+includePath.size())!=("//#endclude \""+includePath)){
                 bottom--;
             }
             data.erase(data.begin()+top,data.begin()+bottom);

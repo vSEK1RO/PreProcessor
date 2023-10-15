@@ -11,6 +11,7 @@
 #include <string>
 #include <fstream>
 #include <vector>
+#include <iostream>
 
 using namespace std;
 
@@ -57,14 +58,22 @@ string preProcess(string dir, string path){
             includeData+="\n//#endclude \""+includePath+"\"";
             continue;
         }
+        top=0;
+        bottom=data.size();
         if(data[i].substr(0,12)=="//#include \""){
             includePath=data[i].substr(12,data[i].substr(12,data[i].size()-12).find("\""));
+            // cout<<"\n\n//#endclude \""+includePath+"\n\n";
+            // for(int i=0;i<data.size();i++){
+            //     cout<<data[i]+"\n";
+            // }
+            // cout<<"\n\n";
             while(data[top].substr(0,12+includePath.size())!=("//#include \""+includePath)){
                 top++;
             }
             while(data[bottom].substr(0,13+includePath.size())!=("//#endclude \""+includePath)){
                 bottom--;
             }
+            // printf("%d\n%d\n",top,bottom);
             data.erase(data.begin()+top,data.begin()+bottom);
             if(i!=0){
                 includeData+="\n";

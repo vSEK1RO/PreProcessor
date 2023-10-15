@@ -36,7 +36,7 @@ string preProcess(string dir, string path){
         data.push_back(buffer);
     }
     fr.close();
-    int top=0,bottom=data.size()-1;
+    int top=0,bottom=0;
     for(int i=0;i<data.size();i++){
         if(data[i].substr(0,10)=="#include \""){
             includePath=data[i].substr(10,data[i].substr(10,data[i].size()-10).find("\""));
@@ -58,8 +58,6 @@ string preProcess(string dir, string path){
             includeData+="\n//#endclude \""+includePath+"\"";
             continue;
         }
-        top=0;
-        bottom=data.size();
         if(data[i].substr(0,12)=="//#include \""){
             includePath=data[i].substr(12,data[i].substr(12,data[i].size()-12).find("\""));
             // cout<<"\n\n//#endclude \""+includePath+"\n\n";
@@ -67,11 +65,10 @@ string preProcess(string dir, string path){
             //     cout<<data[i]+"\n";
             // }
             // cout<<"\n\n";
-            while(data[top].substr(0,12+includePath.size())!=("//#include \""+includePath)){
-                top++;
-            }
+            top=i;
+            bottom=top;
             while(data[bottom].substr(0,13+includePath.size())!=("//#endclude \""+includePath)){
-                bottom--;
+                bottom++;
             }
             // printf("%d\n%d\n",top,bottom);
             data.erase(data.begin()+top,data.begin()+bottom);

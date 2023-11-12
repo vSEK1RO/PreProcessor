@@ -12,6 +12,7 @@
 #include <fstream>
 #include <vector>
 #include <iostream>
+#include <ctime>
 
 using namespace std;
 
@@ -38,6 +39,57 @@ string preProcess(string dir, string path){
     fr.close();
     int top=0,bottom=0;
     for(int i=0;i<data.size();i++){
+        if(data[i].substr(0,6)=="//time"){
+            if(i!=0){
+                includeData+="\n";
+            }
+            struct tm *ptr;
+            time_t It;
+            It = time(NULL);
+            ptr = localtime(&It);
+            string timeBuff = charToString(asctime(ptr));
+            timeBuff.pop_back();
+            includeData+="/*";
+            if(timeBuff.size()>76){
+                timeBuff=timeBuff.substr(0,76);
+            }
+            for(int j=0;j<(76-timeBuff.size())/2;j++){
+                includeData+="*";
+            }
+            if(timeBuff.size()%2==0){
+                includeData+=" "+timeBuff+" ";
+            }else{
+                includeData+="* "+timeBuff+" ";
+            }
+            for(int j=0;j<(76-timeBuff.size())/2;j++){
+                includeData+="*";
+            }
+            includeData+="*/";
+            continue;
+        }
+        if(data[i].substr(0,6)=="//comt"){
+            data[i].erase(0,7);
+            if(i!=0){
+                includeData+="\n";
+            }
+            includeData+="/*";
+            if(data[i].size()>76){
+                data[i]=data[i].substr(0,76);
+            }
+            for(int j=0;j<(76-data[i].size())/2;j++){
+                includeData+="*";
+            }
+            if(data[i].size()%2==0){
+                includeData+=" "+data[i]+" ";
+            }else{
+                includeData+="* "+data[i]+" ";
+            }
+            for(int j=0;j<(76-data[i].size())/2;j++){
+                includeData+="*";
+            }
+            includeData+="*/";
+            continue;
+        }
         if(data[i].substr(0,10)=="#include \""){
             includePath=data[i].substr(10,data[i].substr(10,data[i].size()-10).find("\""));
             if(i!=0){

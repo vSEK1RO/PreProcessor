@@ -39,7 +39,7 @@ string preProcess(string dir, string path){
     fr.close();
     int top=0,bottom=0;
     for(int i=0;i<data.size();i++){
-        if(data[i].substr(0,6)=="//time"){
+        if(data[i].find("//time")!=string::npos){
             if(i!=0){
                 includeData+="\n";
             }
@@ -67,8 +67,8 @@ string preProcess(string dir, string path){
             includeData+="*/";
             continue;
         }
-        if(data[i].substr(0,6)=="//comt"){
-            data[i].erase(0,7);
+        if(data[i].find("//comt")!=string::npos){
+            data[i].erase(0,data[i].find("//comt")+7);
             if(i!=0){
                 includeData+="\n";
             }
@@ -79,7 +79,9 @@ string preProcess(string dir, string path){
             for(int j=0;j<(74-data[i].size())/2;j++){
                 includeData+="*";
             }
-            if(data[i].size()%2==0){
+            if(data[i].size()==0){
+                includeData+="**";
+            }else if(data[i].size()%2==0){
                 includeData+=" "+data[i]+" ";
             }else{
                 includeData+="* "+data[i]+" ";

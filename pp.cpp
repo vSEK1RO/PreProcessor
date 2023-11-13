@@ -16,7 +16,7 @@
 
 using namespace std;
 
-string charToString(char *a){
+string charToString(const char *a){
     string res="";
     int i=0;
     while(a[i]!='\0'){
@@ -26,12 +26,26 @@ string charToString(char *a){
     return res;
 }
 
-string preProcess(string dir, string path){
+const bool contains( vector<string>& Vec, string Element ) 
+{
+    for(int i=0;i<Vec.size();i++){
+        if(Vec[i]==Element){
+            return true;
+        }
+    }
+    return false;
+}
+
+string preProcess(string dir, string path, vector <string> & flags){
     vector <string> data;
     string includeData = "", includePath;
     string buffer = "";
     string untilSlash;
     ifstream fr(dir+"/"+path);
+    if (!(fr.is_open())){
+        printf("File didn't find\n");
+        exit(-1);
+    }
     while(!fr.eof()){
         getline(fr,buffer);
         data.push_back(buffer);
@@ -92,7 +106,7 @@ string preProcess(string dir, string path){
             includeData+="*/";
             continue;
         }
-        if(data[i].substr(0,10)=="#include \""){
+        if(data[i].substr(0,10)=="#include \"" && !contains(flags,charToString("-i"))){
             includePath=data[i].substr(10,data[i].substr(10,data[i].size()-10).find("\""));
             if(i!=0){
                 includeData+="\n";
@@ -102,9 +116,9 @@ string preProcess(string dir, string path){
                 untilSlash=includePath.substr(0,includePath.rfind("/"));
                 buffer=includePath;
                 buffer.erase(0,includePath.rfind("/")+1);
-                includeData+=preProcess(dir+"/"+untilSlash,buffer);
+                includeData+=preProcess(dir+"/"+untilSlash,buffer,flags);
             }else{
-                includeData+=preProcess(dir,includePath);
+                includeData+=preProcess(dir,includePath,flags);
             }
             printf("---------\n");
             printf("%s\n",dir.c_str());
@@ -112,7 +126,7 @@ string preProcess(string dir, string path){
             includeData+="\n//#endclude \""+includePath+"\"";
             continue;
         }
-        if(data[i].substr(0,12)=="//#include \""){
+        if(data[i].substr(0,12)=="//#include \"" && !contains(flags,charToString("-//i"))){
             includePath=data[i].substr(12,data[i].substr(12,data[i].size()-12).find("\""));
             // cout<<"\n\n//#endclude \""+includePath+"\n\n";
             // for(int i=0;i<data.size();i++){
@@ -134,9 +148,9 @@ string preProcess(string dir, string path){
                 untilSlash=includePath.substr(0,includePath.rfind("/"));
                 buffer=includePath;
                 buffer.erase(0,includePath.rfind("/")+1);
-                includeData+=preProcess(dir+"/"+untilSlash,buffer);
+                includeData+=preProcess(dir+"/"+untilSlash,buffer,flags);
             }else{
-                includeData+=preProcess(dir,includePath);
+                includeData+=preProcess(dir,includePath,flags);
             }
             printf("---------\n");
             printf("%s\n",dir.c_str());
@@ -155,9 +169,13 @@ string preProcess(string dir, string path){
 
 int main(int argc, char **argv){
     if(argc>1){
+        vector <string> flags;
+        for(int i=0;i<argc-2;i++){
+            flags.push_back(charToString(argv[i+2]));
+        }
         auto dir_path = std::filesystem::current_path();
         printf("\n%s\n\n",(dir_path.u8string()+"/"+charToString(argv[1])).c_str());
-        string data=preProcess(dir_path.u8string(),charToString(argv[1]));
+        string data=preProcess(dir_path.u8string(),charToString(argv[1]),flags);
         ofstream fw(dir_path.u8string()+"/"+charToString(argv[1]));
         fw<<data;
         fw.close();

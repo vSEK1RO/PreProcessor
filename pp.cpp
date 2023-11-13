@@ -50,10 +50,10 @@ string preProcess(string dir, string path){
             string timeBuff = charToString(asctime(ptr));
             timeBuff.pop_back();
             includeData+="/*";
-            if(timeBuff.size()>76){
-                timeBuff=timeBuff.substr(0,76);
+            if(timeBuff.size()>74){
+                timeBuff=timeBuff.substr(0,74);
             }
-            for(int j=0;j<(76-timeBuff.size())/2;j++){
+            for(int j=0;j<(74-timeBuff.size())/2;j++){
                 includeData+="*";
             }
             if(timeBuff.size()%2==0){
@@ -61,7 +61,7 @@ string preProcess(string dir, string path){
             }else{
                 includeData+="* "+timeBuff+" ";
             }
-            for(int j=0;j<(76-timeBuff.size())/2;j++){
+            for(int j=0;j<(74-timeBuff.size())/2;j++){
                 includeData+="*";
             }
             includeData+="*/";
@@ -73,10 +73,10 @@ string preProcess(string dir, string path){
                 includeData+="\n";
             }
             includeData+="/*";
-            if(data[i].size()>76){
-                data[i]=data[i].substr(0,76);
+            if(data[i].size()>74){
+                data[i]=data[i].substr(0,74);
             }
-            for(int j=0;j<(76-data[i].size())/2;j++){
+            for(int j=0;j<(74-data[i].size())/2;j++){
                 includeData+="*";
             }
             if(data[i].size()%2==0){
@@ -84,7 +84,7 @@ string preProcess(string dir, string path){
             }else{
                 includeData+="* "+data[i]+" ";
             }
-            for(int j=0;j<(76-data[i].size())/2;j++){
+            for(int j=0;j<(74-data[i].size())/2;j++){
                 includeData+="*";
             }
             includeData+="*/";

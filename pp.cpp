@@ -106,6 +106,31 @@ string preProcess(string dir, string path, vector <string> & flags){
             includeData+="*/";
             continue;
         }
+        if(data[i].find("//coms")!=string::npos){
+            data[i].erase(0,data[i].find("//coms")+7);
+            if(i!=0){
+                includeData+="\n";
+            }
+            includeData+="/*";
+            if(data[i].size()>74){
+                data[i]=data[i].substr(0,74);
+            }
+            for(int j=0;j<(74-data[i].size())/2;j++){
+                includeData+=" ";
+            }
+            if(data[i].size()==0){
+                includeData+="  ";
+            }else if(data[i].size()%2==0){
+                includeData+=" "+data[i]+" ";
+            }else{
+                includeData+="  "+data[i]+" ";
+            }
+            for(int j=0;j<(74-data[i].size())/2;j++){
+                includeData+=" ";
+            }
+            includeData+="*/";
+            continue;
+        }
         if(data[i].substr(0,10)=="#include \"" && !contains(flags,charToString("-i"))){
             includePath=data[i].substr(10,data[i].substr(10,data[i].size()-10).find("\""));
             if(i!=0){
